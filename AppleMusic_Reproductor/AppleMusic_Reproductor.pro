@@ -4,10 +4,12 @@ CONFIG += c++17
 
 SOURCES += \
     main.cpp \
-    cframe.cpp
+    cframe.cpp \
+    usuarios.cpp
 
 HEADERS += \
-    cframe.h
+    cframe.h \
+    usuarios.h
 
 FORMS += \
     cframe.ui

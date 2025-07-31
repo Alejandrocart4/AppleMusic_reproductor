@@ -35,10 +35,23 @@ private slots:
     void on_volumen_valueChanged(int value);
 
 
+    void on_btnCrearCuenta_clicked();
+
+    void on_btnVolver1_clicked();
+
+    void on_btnCargarImagen_clicked();
+
+    void on_btnIniciarSesion_clicked();
+
+    void on_Cerrar_sesion1_clicked();
+
+    void on_Cerrar_sesion1_2_clicked();
+
 private:
     Ui::cframe *ui;
     QMediaPlayer *reproducer;
     QAudioOutput *audioOutput;
     bool usuarioControlandoSlider = false;
+    QString rutaSeleccionadaDesdeBoton;
 };
 #endif // CFRAME_H

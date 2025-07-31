@@ -46,7 +46,13 @@ template <> constexpr inline auto cframe::qt_create_metaobjectdata<qt_meta_tag_Z
         "on_stop_clicked",
         "on_mute_clicked",
         "on_volumen_valueChanged",
-        "value"
+        "value",
+        "on_btnCrearCuenta_clicked",
+        "on_btnVolver1_clicked",
+        "on_btnCargarImagen_clicked",
+        "on_btnIniciarSesion_clicked",
+        "on_Cerrar_sesion1_clicked",
+        "on_Cerrar_sesion1_2_clicked"
     };
 
     QtMocHelpers::UintData qt_methods {
@@ -64,6 +70,18 @@ template <> constexpr inline auto cframe::qt_create_metaobjectdata<qt_meta_tag_Z
         QtMocHelpers::SlotData<void(int)>(7, 2, QMC::AccessPrivate, QMetaType::Void, {{
             { QMetaType::Int, 8 },
         }}),
+        // Slot 'on_btnCrearCuenta_clicked'
+        QtMocHelpers::SlotData<void()>(9, 2, QMC::AccessPrivate, QMetaType::Void),
+        // Slot 'on_btnVolver1_clicked'
+        QtMocHelpers::SlotData<void()>(10, 2, QMC::AccessPrivate, QMetaType::Void),
+        // Slot 'on_btnCargarImagen_clicked'
+        QtMocHelpers::SlotData<void()>(11, 2, QMC::AccessPrivate, QMetaType::Void),
+        // Slot 'on_btnIniciarSesion_clicked'
+        QtMocHelpers::SlotData<void()>(12, 2, QMC::AccessPrivate, QMetaType::Void),
+        // Slot 'on_Cerrar_sesion1_clicked'
+        QtMocHelpers::SlotData<void()>(13, 2, QMC::AccessPrivate, QMetaType::Void),
+        // Slot 'on_Cerrar_sesion1_2_clicked'
+        QtMocHelpers::SlotData<void()>(14, 2, QMC::AccessPrivate, QMetaType::Void),
     };
     QtMocHelpers::UintData qt_properties {
     };
@@ -93,6 +111,12 @@ void cframe::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id, void
         case 3: _t->on_stop_clicked(); break;
         case 4: _t->on_mute_clicked(); break;
         case 5: _t->on_volumen_valueChanged((*reinterpret_cast< std::add_pointer_t<int>>(_a[1]))); break;
+        case 6: _t->on_btnCrearCuenta_clicked(); break;
+        case 7: _t->on_btnVolver1_clicked(); break;
+        case 8: _t->on_btnCargarImagen_clicked(); break;
+        case 9: _t->on_btnIniciarSesion_clicked(); break;
+        case 10: _t->on_Cerrar_sesion1_clicked(); break;
+        case 11: _t->on_Cerrar_sesion1_2_clicked(); break;
         default: ;
         }
     }
@@ -117,14 +141,14 @@ int cframe::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
     if (_id < 0)
         return _id;
     if (_c == QMetaObject::InvokeMetaMethod) {
-        if (_id < 6)
+        if (_id < 12)
             qt_static_metacall(this, _c, _id, _a);
-        _id -= 6;
+        _id -= 12;
     }
     if (_c == QMetaObject::RegisterMethodArgumentMetaType) {
-        if (_id < 6)
+        if (_id < 12)
             *reinterpret_cast<QMetaType *>(_a[0]) = QMetaType();
-        _id -= 6;
+        _id -= 12;
     }
     return _id;
 }
