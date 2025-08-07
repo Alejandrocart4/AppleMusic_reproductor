@@ -1,0 +1,12 @@
+debug/artista.o
+debug/cancion.o
+debug/interfaz_usuario.o
+debug/interfazadministrador.o
+debug/interfazadministrador.o
+debug/main.o
+debug/cframe.o
+debug/manejadorcanciones.o
+debug/usuarios.o
+debug/qrc_imagnes.o
+debug/moc_cframe.o
+debug/moc_interfazadministrador.o

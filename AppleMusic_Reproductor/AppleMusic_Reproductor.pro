@@ -3,12 +3,24 @@ QT += core gui widgets multimedia multimediawidgets
 CONFIG += c++17
 
 SOURCES += \
+    artista.cpp \
+    cancion.cpp \
+    interfaz_usuario.cpp \
+    interfazadministrador.cpp \
+    interfazadministrador.cpp \
     main.cpp \
     cframe.cpp \
+    manejadorcanciones.cpp \
     usuarios.cpp
 
 HEADERS += \
+    artista.h \
+    cancion.h \
     cframe.h \
+    interfaz_usuario.h \
+    interfazadministrador.h \
+    interfazadministrador.h \
+    manejadorcanciones.h \
     usuarios.h
 
 FORMS += \

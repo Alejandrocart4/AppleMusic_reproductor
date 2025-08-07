@@ -15,24 +15,25 @@ enum TipoUsuario {
 };
 
 struct Usuario {
-    QString aliasre;
-    QString contrasenia;
+    int id;                    // ID único del usuario
+    QString aliasre;           // Alias o nombre de usuario
+    QString contrasenia;       // Contraseña (se guardará cifrada)
+    QString correoElectronico; // Nuevo campo
     bool activo;
     TipoUsuario tipo;
-
-    // Campos comunes a ambos
     QDate fechaRegistro;
+    QString rutaImagen;        // Imagen/avatar para cualquier tipo de usuario
+
+    // Datos comunes
+    QString nombreReal;        // Para administradores y también usuarios comunes
 
     // Solo si es Administrador
     QString nombreArtistico;
-    QString nombreReal;
     QString paisOrigen;
     QString generoMusical;
     QString biografia;
-    QString rutaImagen;
 
     // Solo si es Usuario común
-    QString NombreUsuario;
     QDate fechaNacimiento;
     QString generoPreferido;
 

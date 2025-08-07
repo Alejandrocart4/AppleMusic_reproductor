@@ -1,28 +1,52 @@
 #include "usuarios.h"
+#include <QCryptographicHash>
+
+// Función para cifrar contraseñas con SHA-256
+static QString cifrarContrasenia(const QString &password) {
+    QByteArray hash = QCryptographicHash::hash(password.toUtf8(), QCryptographicHash::Sha256);
+    return QString(hash.toHex());
+}
 
 // Guardar usuario en binario
-void Usuario::guardar(QDataStream &out) const {
-    out << aliasre << contrasenia << activo << static_cast<int>(tipo) << fechaRegistro;
+    void Usuario::guardar(QDataStream &out) const {
+        out << id
+            << aliasre
+            << cifrarContrasenia(contrasenia)
+            << correoElectronico
+            << activo
+            << static_cast<int>(tipo)
+            << fechaRegistro
+            << rutaImagen
+            << nombreReal;
 
-    if (tipo == Administrador) {
-        out << nombreArtistico << nombreReal << paisOrigen << generoMusical << biografia << rutaImagen;
-    } else if (tipo == UsuarioComun) {
-        out << NombreUsuario << fechaNacimiento << generoPreferido;
+        if (tipo == Administrador) {
+            out << nombreArtistico << paisOrigen << generoMusical << biografia;
+        } else if (tipo == UsuarioComun) {
+            out << fechaNacimiento << generoPreferido;
+        }
     }
-}
 
 // Cargar usuario desde binario
-void Usuario::cargar(QDataStream &in) {
-    int tipoInt;
-    in >> aliasre >> contrasenia >> activo >> tipoInt >> fechaRegistro;
-    tipo = static_cast<TipoUsuario>(tipoInt);
+    void Usuario::cargar(QDataStream &in) {
+        int tipoInt;
+        in >> id
+            >> aliasre
+            >> contrasenia
+            >> correoElectronico
+            >> activo
+            >> tipoInt
+            >> fechaRegistro
+            >> rutaImagen
+            >> nombreReal;
 
-    if (tipo == Administrador) {
-        in >> nombreArtistico >> nombreReal >> paisOrigen >> generoMusical >> biografia >> rutaImagen;
-    } else if (tipo == UsuarioComun) {
-        in >> NombreUsuario >> fechaNacimiento >> generoPreferido;
+        tipo = static_cast<TipoUsuario>(tipoInt);
+
+        if (tipo == Administrador) {
+            in >> nombreArtistico >> paisOrigen >> generoMusical >> biografia;
+        } else if (tipo == UsuarioComun) {
+            in >> fechaNacimiento >> generoPreferido;
+        }
     }
-}
 
 // Constructor del manejador
 ManejadorUsuarios::ManejadorUsuarios(const QString &archivo)

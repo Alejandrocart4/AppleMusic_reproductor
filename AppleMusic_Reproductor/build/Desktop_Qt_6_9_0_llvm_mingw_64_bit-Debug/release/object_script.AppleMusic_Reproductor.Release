@@ -1,0 +1,12 @@
+release/artista.o
+release/cancion.o
+release/interfaz_usuario.o
+release/interfazadministrador.o
+release/interfazadministrador.o
+release/main.o
+release/cframe.o
+release/manejadorcanciones.o
+release/usuarios.o
+release/qrc_imagnes.o
+release/moc_cframe.o
+release/moc_interfazadministrador.o

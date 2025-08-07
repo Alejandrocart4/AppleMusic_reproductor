@@ -4,6 +4,12 @@
 #include <QMainWindow>
 #include <QMediaPlayer>
 #include <QAudioOutput>
+#include "manejadorcanciones.h"
+#include "cancion.h"
+#include <QVBoxLayout>
+#include <QPushButton>
+#include <QSlider>
+#include <QLabel>
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
@@ -20,6 +26,17 @@ class cframe : public QMainWindow
 public:
     cframe(QWidget *parent = nullptr);
     ~cframe();
+    QPushButton* getBtnPlay() const;
+    QPushButton* getBtnPause() const;
+    QPushButton* getBtnStop() const;
+    QPushButton* getBtnAbrir() const;
+    QPushButton* getBtnMute() const;
+    QSlider* getSliderProgreso() const;
+    QSlider* getSliderVolumen() const;
+    QLabel* getLabelTiempo() const;
+    QPushButton* getBtnCerrarSesion() const;
+    void regresarAlInicio();
+    void mostrarCancionesParaUsuario();
 
 private slots:
     void on_abrir_clicked();
@@ -53,5 +70,9 @@ private:
     QAudioOutput *audioOutput;
     bool usuarioControlandoSlider = false;
     QString rutaSeleccionadaDesdeBoton;
+
+    void cargarVistaAppleMusic();
+    QWidget* crearSeccionHorizontal(const QString &titulo, const QStringList &items);
+    //void mostrarCancionesParaUsuario();
 };
 #endif // CFRAME_H
