@@ -44,7 +44,8 @@ template <> constexpr inline auto InterfazAdministrador::qt_create_metaobjectdat
         "",
         "slotAgregarCancion",
         "slotEditarEliminarCancion",
-        "slotVerEstadisticas",
+        "slotCrearAlbum",
+        "slotCrearEP",
         "slotCerrarSesion"
     };
 
@@ -55,10 +56,12 @@ template <> constexpr inline auto InterfazAdministrador::qt_create_metaobjectdat
         QtMocHelpers::SlotData<void()>(3, 2, QMC::AccessPrivate, QMetaType::Void),
         // Slot 'slotEditarEliminarCancion'
         QtMocHelpers::SlotData<void()>(4, 2, QMC::AccessPrivate, QMetaType::Void),
-        // Slot 'slotVerEstadisticas'
+        // Slot 'slotCrearAlbum'
         QtMocHelpers::SlotData<void()>(5, 2, QMC::AccessPrivate, QMetaType::Void),
-        // Slot 'slotCerrarSesion'
+        // Slot 'slotCrearEP'
         QtMocHelpers::SlotData<void()>(6, 2, QMC::AccessPrivate, QMetaType::Void),
+        // Slot 'slotCerrarSesion'
+        QtMocHelpers::SlotData<void()>(7, 2, QMC::AccessPrivate, QMetaType::Void),
     };
     QtMocHelpers::UintData qt_properties {
     };
@@ -85,8 +88,9 @@ void InterfazAdministrador::qt_static_metacall(QObject *_o, QMetaObject::Call _c
         case 0: _t->slotEditarPerfil(); break;
         case 1: _t->slotAgregarCancion(); break;
         case 2: _t->slotEditarEliminarCancion(); break;
-        case 3: _t->slotVerEstadisticas(); break;
-        case 4: _t->slotCerrarSesion(); break;
+        case 3: _t->slotCrearAlbum(); break;
+        case 4: _t->slotCrearEP(); break;
+        case 5: _t->slotCerrarSesion(); break;
         default: ;
         }
     }
@@ -112,14 +116,14 @@ int InterfazAdministrador::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
     if (_id < 0)
         return _id;
     if (_c == QMetaObject::InvokeMetaMethod) {
-        if (_id < 5)
+        if (_id < 6)
             qt_static_metacall(this, _c, _id, _a);
-        _id -= 5;
+        _id -= 6;
     }
     if (_c == QMetaObject::RegisterMethodArgumentMetaType) {
-        if (_id < 5)
+        if (_id < 6)
             *reinterpret_cast<QMetaType *>(_a[0]) = QMetaType();
-        _id -= 5;
+        _id -= 6;
     }
     return _id;
 }

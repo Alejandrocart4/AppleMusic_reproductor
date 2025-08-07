@@ -1,4 +1,4 @@
-#ifndef INTERFAZADMINISTRADOR_H
+/*#ifndef INTERFAZADMINISTRADOR_H
 #define INTERFAZADMINISTRADOR_H
 
 #include <QWidget>
@@ -48,4 +48,64 @@ private:
     void mostrarFormularioCrearAlbum();
 };
 
+#endif // INTERFAZADMINISTRADOR_H*/
+
+#ifndef INTERFAZADMINISTRADOR_H
+#define INTERFAZADMINISTRADOR_H
+
+#include <QWidget>
+#include <QVBoxLayout>
+#include <QPushButton>
+#include <QLabel>
+#include <QLineEdit>
+#include <QScrollArea>
+#include <QComboBox>
+#include <QTextEdit>
+#include <QListWidget>
+#include <QDate>
+#include "manejadorcanciones.h"
+#include "usuarios.h"
+#include "cframe.h"
+
+class cframe;
+
+class InterfazAdministrador : public QWidget
+{
+    Q_OBJECT
+
+public:
+    explicit InterfazAdministrador(QWidget *parent = nullptr);
+
+    void cargarEnPagina(QWidget *pagina);
+    void setNombreArtista(const QString &nombre);
+    void setPaginaPrincipal(cframe *pagina);
+
+private slots:
+    void slotEditarPerfil();
+    void slotAgregarCancion();
+    void slotEditarEliminarCancion();
+    void slotCrearAlbum();
+    void slotCrearEP();
+    void slotCerrarSesion();
+
+private:
+    QString nombreArtistaLogueado;
+    QWidget *zonaCentral;
+    QWidget *zonaDerecha;
+    cframe *paginaPrincipal;
+    QPushButton *Cerrar_sesion1;
+
+    // Interfaz
+    QWidget* crearMenuIzquierdo();
+    QWidget* crearZonaCentral();
+    QWidget* crearZonaDerecha();
+
+    // Formularios y acciones
+    void mostrarFormularioAgregar();
+    void mostrarFormularioCrearAlbumEP(const QString &tipo);
+    void mostrarListaCancionesEditable();
+    void mostrarFormularioEditarPerfil();  // Puedes completarlo como hicimos en partes anteriores
+};
+
 #endif // INTERFAZADMINISTRADOR_H
+

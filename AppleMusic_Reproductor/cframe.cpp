@@ -208,6 +208,7 @@ void cframe::regresarAlInicio() {
     ui->stackedWidget->setCurrentIndex(0);  // Cambia al login
 }
 
+
 void cframe::on_abrir_clicked()
 {
     QString filename = QFileDialog::getOpenFileName(this, "Abrir");
@@ -448,7 +449,7 @@ void cframe::on_btnIniciarSesion_clicked()
                     ui->lblImagenAdminInicio->clear();
                 }
 
-                //ui->stackedWidget->setCurrentIndex(3); // Página del admin
+                ui->stackedWidget->setCurrentIndex(3); // Página del admin
 
                 InterfazAdministrador *uiAdmin = new InterfazAdministrador();
                 uiAdmin->setNombreArtista(u.nombreArtistico); // nombre del admin logueado
@@ -494,4 +495,5 @@ QSlider* cframe::getSliderProgreso() const { return ui->sliderProgreso; }
 QSlider* cframe::getSliderVolumen() const { return ui->volumen; }
 QLabel* cframe::getLabelTiempo() const { return ui->labelTiempo; }
 QPushButton* cframe::getBtnCerrarSesion() const { return ui->Cerrar_sesion1_2; }
+
 

@@ -419,7 +419,7 @@ public:
 
         retranslateUi(cframe);
 
-        stackedWidget->setCurrentIndex(3);
+        stackedWidget->setCurrentIndex(0);
 
 
         QMetaObject::connectSlotsByName(cframe);

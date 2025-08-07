@@ -2,6 +2,7 @@
 #define INTERFAZ_USUARIO_H
 
 #include <QWidget>
+#include <QPushButton>
 
 class cframe;  // Declaración adelantada
 
@@ -17,6 +18,19 @@ private:
     QWidget* crearMenuIzquierdo();
     QWidget* crearZonaCentral();
     QWidget* crearZonaDerecha();
+
+    QPushButton *btnBiblioteca;
+    QPushButton *btnFavoritos;
+    QPushButton *btnPlaylists;
+    QPushButton *btnDescargas;
+    QWidget *zonaCentral;
+
+
+    void mostrarVistaBiblioteca();
+    void mostrarVistaFavoritos();
+    void mostrarVistaPlaylists();
+    void mostrarVistaDescargas();
+    void reproducirCancion(const QString &ruta);
 };
 
 #endif // INTERFAZ_USUARIO_H

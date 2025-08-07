@@ -38,6 +38,7 @@ public:
     void regresarAlInicio();
     void mostrarCancionesParaUsuario();
 
+
 private slots:
     void on_abrir_clicked();
 
