@@ -16,10 +16,10 @@ struct Cancion {
     QString portada;       // Ruta de imagen de portada
     QString rutaArchivo;   // Ruta del archivo de audio
     QString tipo;          // Single, EP, Álbum
+    QString coleccion;     // Nombre del Álbum o EP (vacío si Single)  << NUEVO
     QDate fechaCarga;
     bool activo;
 
-    // Guardar en binario
     void guardar(QDataStream &out) const {
         out << id
             << titulo
@@ -31,11 +31,11 @@ struct Cancion {
             << portada
             << rutaArchivo
             << tipo
+            << coleccion        // << NUEVO en binario
             << fechaCarga
             << activo;
     }
 
-    // Cargar desde binario
     void cargar(QDataStream &in) {
         in >> id
             >> titulo
@@ -47,6 +47,7 @@ struct Cancion {
             >> portada
             >> rutaArchivo
             >> tipo
+            >> coleccion        // << NUEVO en binario
             >> fechaCarga
             >> activo;
     }

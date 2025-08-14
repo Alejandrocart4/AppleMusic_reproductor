@@ -439,8 +439,11 @@ Makefile: ../../AppleMusic_Reproductor.pro D:/C++/Qt/6.9.0/llvm-mingw_64/mkspecs
 		D:/C++/Qt/6.9.0/llvm-mingw_64/mkspecs/features/lex.prf \
 		../../AppleMusic_Reproductor.pro \
 		D:/C++/Qt/6.9.0/llvm-mingw_64/lib/Qt6MultimediaWidgets.prl \
+		D:/C++/Qt/6.9.0/llvm-mingw_64/lib/Qt6Charts.prl \
+		D:/C++/Qt/6.9.0/llvm-mingw_64/lib/Qt6OpenGLWidgets.prl \
 		D:/C++/Qt/6.9.0/llvm-mingw_64/lib/Qt6Widgets.prl \
 		D:/C++/Qt/6.9.0/llvm-mingw_64/lib/Qt6Multimedia.prl \
+		D:/C++/Qt/6.9.0/llvm-mingw_64/lib/Qt6OpenGL.prl \
 		D:/C++/Qt/6.9.0/llvm-mingw_64/lib/Qt6Gui.prl \
 		D:/C++/Qt/6.9.0/llvm-mingw_64/lib/Qt6Network.prl \
 		D:/C++/Qt/6.9.0/llvm-mingw_64/lib/Qt6Core.prl \
@@ -817,8 +820,11 @@ D:/C++/Qt/6.9.0/llvm-mingw_64/mkspecs/features/yacc.prf:
 D:/C++/Qt/6.9.0/llvm-mingw_64/mkspecs/features/lex.prf:
 ../../AppleMusic_Reproductor.pro:
 D:/C++/Qt/6.9.0/llvm-mingw_64/lib/Qt6MultimediaWidgets.prl:
+D:/C++/Qt/6.9.0/llvm-mingw_64/lib/Qt6Charts.prl:
+D:/C++/Qt/6.9.0/llvm-mingw_64/lib/Qt6OpenGLWidgets.prl:
 D:/C++/Qt/6.9.0/llvm-mingw_64/lib/Qt6Widgets.prl:
 D:/C++/Qt/6.9.0/llvm-mingw_64/lib/Qt6Multimedia.prl:
+D:/C++/Qt/6.9.0/llvm-mingw_64/lib/Qt6OpenGL.prl:
 D:/C++/Qt/6.9.0/llvm-mingw_64/lib/Qt6Gui.prl:
 D:/C++/Qt/6.9.0/llvm-mingw_64/lib/Qt6Network.prl:
 D:/C++/Qt/6.9.0/llvm-mingw_64/lib/Qt6Core.prl:

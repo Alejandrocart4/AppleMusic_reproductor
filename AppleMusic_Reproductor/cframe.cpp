@@ -7,6 +7,9 @@
 #include "interfazadministrador.h"
 #include <QScrollArea>
 #include <QCryptographicHash>
+#include <QMediaPlayer>
+#include <QAudioOutput>
+#include <QTime>
 
 static QString cifrarContrasenia(const QString &password) {
     QByteArray hash = QCryptographicHash::hash(password.toUtf8(), QCryptographicHash::Sha256);
@@ -138,8 +141,8 @@ cframe::cframe(QWidget *parent)
     InterfazUsuario *uiUsuario = new InterfazUsuario(this);
     uiUsuario->cargarEnPagina(ui->stackedWidget->widget(2));
 
-    InterfazAdministrador *uiAdmin = new InterfazAdministrador();
-    uiAdmin->cargarEnPagina(ui->stackedWidget->widget(3));
+    /*InterfazAdministrador *uiAdmin = new InterfazAdministrador();
+    uiAdmin->cargarEnPagina(ui->stackedWidget->widget(3));*/
 
 
 
@@ -310,6 +313,7 @@ void cframe::on_btnCrearCuenta_clicked()
         QString genero = ui->cbGeneroMusical->currentText();
         QString bio = ui->teBiografia->toPlainText().trimmed();
 
+
         if (nombreArtistico.isEmpty() ||
             nombreReal.isEmpty() ||
             pais.isEmpty() ||
@@ -328,6 +332,7 @@ void cframe::on_btnCrearCuenta_clicked()
         nuevo.generoMusical = genero;
         nuevo.biografia = bio;
         nuevo.rutaImagen = rutaSeleccionadaDesdeBoton;
+        nuevo.correoElectronico = correo;
     }
     else if (tipoSeleccionado == 2) { // USUARIO COMÚN
         QString NombreRealUsuario = ui->leNombreReal->text().trimmed();

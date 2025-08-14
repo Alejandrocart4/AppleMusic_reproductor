@@ -1,5 +1,4 @@
 #include "manejadorcanciones.h"
-#include "manejadorcanciones.h"
 #include <QFile>
 #include <QDataStream>
 

@@ -46,7 +46,7 @@ public:
     ManejadorUsuarios(const QString &archivo = "usuarios.dat");
 
     void agregarUsuario(const Usuario &usuario);
-    QList<Usuario> obtenerUsuarios();
+    QList<Usuario> obtenerUsuarios() const;
 
 private:
     QString rutaArchivo;

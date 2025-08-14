@@ -7,24 +7,34 @@ static QString cifrarContrasenia(const QString &password) {
     return QString(hash.toHex());
 }
 
-// Guardar usuario en binario
-    void Usuario::guardar(QDataStream &out) const {
-        out << id
-            << aliasre
-            << cifrarContrasenia(contrasenia)
-            << correoElectronico
-            << activo
-            << static_cast<int>(tipo)
-            << fechaRegistro
-            << rutaImagen
-            << nombreReal;
+static bool esHex(const QString &s) {
+    for (QChar c : s) { if (!c.isDigit() && (c.toLower() < 'a' || c.toLower() > 'f')) return false; }
+    return true;
+}
 
-        if (tipo == Administrador) {
-            out << nombreArtistico << paisOrigen << generoMusical << biografia;
-        } else if (tipo == UsuarioComun) {
-            out << fechaNacimiento << generoPreferido;
-        }
+void Usuario::guardar(QDataStream &out) const {
+    QString toStore = contrasenia;
+    // si parece un SHA-256 (64 hex), no volver a hashear
+    if (!(toStore.size() == 64 && esHex(toStore))) {
+        toStore = cifrarContrasenia(contrasenia);
     }
+
+    out << id
+        << aliasre
+        << toStore
+        << correoElectronico
+        << activo
+        << static_cast<int>(tipo)
+        << fechaRegistro
+        << rutaImagen
+        << nombreReal;
+
+    if (tipo == Administrador) {
+        out << nombreArtistico << paisOrigen << generoMusical << biografia;
+    } else if (tipo == UsuarioComun) {
+        out << fechaNacimiento << generoPreferido;
+    }
+}
 
 // Cargar usuario desde binario
     void Usuario::cargar(QDataStream &in) {
@@ -67,7 +77,7 @@ void ManejadorUsuarios::agregarUsuario(const Usuario &usuario) {
 }
 
 // Devuelve todos los usuarios
-QList<Usuario> ManejadorUsuarios::obtenerUsuarios() {
+QList<Usuario> ManejadorUsuarios::obtenerUsuarios() const {
     QList<Usuario> lista;
     QFile archivo(rutaArchivo);
     if (!archivo.open(QIODevice::ReadOnly)) {

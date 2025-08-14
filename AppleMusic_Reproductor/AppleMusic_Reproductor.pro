@@ -1,6 +1,8 @@
 QT += core gui widgets multimedia multimediawidgets
+QT += charts
 
 CONFIG += c++17
+
 
 SOURCES += \
     artista.cpp \
