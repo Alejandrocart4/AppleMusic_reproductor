@@ -145,6 +145,15 @@ cframe::cframe(QWidget *parent)
     uiAdmin->cargarEnPagina(ui->stackedWidget->widget(3));*/
 
 
+    QStringList paises = {
+                          "Honduras", "Guatemala", "El Salvador", "Nicaragua",
+                          "Costa Rica", "Panamá", "México", "Colombia", "Argentina", "Chile","Puerto Rico",
+                          "Estados Unidos"
+    };
+
+    ui->cbPaisOrigen    ->addItems(paises);
+
+
 
 
 }

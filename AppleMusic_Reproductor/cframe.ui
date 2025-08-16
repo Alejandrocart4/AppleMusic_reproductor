@@ -440,164 +440,6 @@
          <string>Seleccionar</string>
         </property>
        </item>
-       <item>
-        <property name="text">
-         <string>Pop</string>
-        </property>
-       </item>
-       <item>
-        <property name="text">
-         <string>Rock</string>
-        </property>
-       </item>
-       <item>
-        <property name="text">
-         <string>Reguetón</string>
-        </property>
-       </item>
-       <item>
-        <property name="text">
-         <string>Electrónica</string>
-        </property>
-       </item>
-       <item>
-        <property name="text">
-         <string>Cristianos</string>
-        </property>
-       </item>
-       <item>
-        <property name="text">
-         <string>Corridos</string>
-        </property>
-       </item>
-       <item>
-        <property name="text">
-         <string>Clásica</string>
-        </property>
-       </item>
-       <item>
-        <property name="text">
-         <string>Instrumental</string>
-        </property>
-       </item>
-      </widget>
-     </widget>
-     <widget class="QGroupBox" name="gbUsuarioComun">
-      <property name="geometry">
-       <rect>
-        <x>240</x>
-        <y>50</y>
-        <width>491</width>
-        <height>81</height>
-       </rect>
-      </property>
-      <property name="title">
-       <string/>
-      </property>
-      <widget class="QDateEdit" name="deFechaNacimiento">
-       <property name="geometry">
-        <rect>
-         <x>250</x>
-         <y>40</y>
-         <width>110</width>
-         <height>29</height>
-        </rect>
-       </property>
-       <property name="date">
-        <date>
-         <year>2004</year>
-         <month>5</month>
-         <day>3</day>
-        </date>
-       </property>
-      </widget>
-      <widget class="QLabel" name="label_11">
-       <property name="geometry">
-        <rect>
-         <x>90</x>
-         <y>20</y>
-         <width>151</width>
-         <height>20</height>
-        </rect>
-       </property>
-       <property name="font">
-        <font>
-         <pointsize>10</pointsize>
-         <bold>true</bold>
-        </font>
-       </property>
-       <property name="text">
-        <string>Genero Preferído:</string>
-       </property>
-      </widget>
-      <widget class="QLabel" name="label_9">
-       <property name="geometry">
-        <rect>
-         <x>250</x>
-         <y>20</y>
-         <width>151</width>
-         <height>20</height>
-        </rect>
-       </property>
-       <property name="font">
-        <font>
-         <pointsize>10</pointsize>
-         <bold>true</bold>
-        </font>
-       </property>
-       <property name="text">
-        <string>Fecha de nacimiento:</string>
-       </property>
-      </widget>
-      <widget class="QComboBox" name="cbGeneroPreferido">
-       <property name="geometry">
-        <rect>
-         <x>90</x>
-         <y>40</y>
-         <width>151</width>
-         <height>28</height>
-        </rect>
-       </property>
-       <item>
-        <property name="text">
-         <string>Seleccionar</string>
-        </property>
-       </item>
-       <item>
-        <property name="text">
-         <string>Pop</string>
-        </property>
-       </item>
-       <item>
-        <property name="text">
-         <string>Rock</string>
-        </property>
-       </item>
-       <item>
-        <property name="text">
-         <string>Reguetón</string>
-        </property>
-       </item>
-       <item>
-        <property name="text">
-         <string>Electrónica</string>
-        </property>
-       </item>
-       <item>
-        <property name="text">
-         <string>Cristianos</string>
-        </property>
-       </item>
-       <item>
-        <property name="text">
-         <string>Corridos</string>
-        </property>
-       </item>
-       <item>
-        <property name="text">
-         <string>Instrumental</string>
-        </property>
-       </item>
       </widget>
      </widget>
      <widget class="QPushButton" name="btnCrearCuenta">
@@ -796,6 +638,124 @@
       <property name="text">
        <string>Nombre Real:</string>
       </property>
+     </widget>
+     <widget class="QGroupBox" name="gbUsuarioComun">
+      <property name="geometry">
+       <rect>
+        <x>460</x>
+        <y>290</y>
+        <width>491</width>
+        <height>81</height>
+       </rect>
+      </property>
+      <property name="title">
+       <string/>
+      </property>
+      <widget class="QDateEdit" name="deFechaNacimiento">
+       <property name="geometry">
+        <rect>
+         <x>250</x>
+         <y>40</y>
+         <width>110</width>
+         <height>29</height>
+        </rect>
+       </property>
+       <property name="date">
+        <date>
+         <year>2004</year>
+         <month>5</month>
+         <day>3</day>
+        </date>
+       </property>
+      </widget>
+      <widget class="QLabel" name="label_11">
+       <property name="geometry">
+        <rect>
+         <x>90</x>
+         <y>20</y>
+         <width>151</width>
+         <height>20</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+         <bold>true</bold>
+        </font>
+       </property>
+       <property name="text">
+        <string>Genero Preferído:</string>
+       </property>
+      </widget>
+      <widget class="QLabel" name="label_9">
+       <property name="geometry">
+        <rect>
+         <x>250</x>
+         <y>20</y>
+         <width>151</width>
+         <height>20</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+         <bold>true</bold>
+        </font>
+       </property>
+       <property name="text">
+        <string>Fecha de nacimiento:</string>
+       </property>
+      </widget>
+      <widget class="QComboBox" name="cbGeneroPreferido">
+       <property name="geometry">
+        <rect>
+         <x>90</x>
+         <y>40</y>
+         <width>151</width>
+         <height>28</height>
+        </rect>
+       </property>
+       <item>
+        <property name="text">
+         <string>Seleccionar</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Pop</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Rock</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Reguetón</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Electrónica</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Cristianos</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Corridos</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Instrumental</string>
+        </property>
+       </item>
+      </widget>
      </widget>
     </widget>
     <widget class="QWidget" name="Usuario">

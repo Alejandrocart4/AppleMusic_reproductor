@@ -42,6 +42,7 @@ void InterfazUsuario::cargarEnPagina(QWidget *pagina) {
 
     QObject::connect(btnCerrarSesion, &QPushButton::clicked, [=]() {
         QStackedWidget *stack = pagina->parentWidget()->findChild<QStackedWidget *>();
+
         if (stack) {
             stack->setCurrentIndex(0);
         }
