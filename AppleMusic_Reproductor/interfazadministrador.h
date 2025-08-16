@@ -80,6 +80,8 @@ private:
     bool  m_autoH, m_autoV;
     int   m_delayMs;
     QTimer m_timer;
+
+
 };
 
 // =============================================================================
@@ -121,6 +123,9 @@ private:
     QWidget *zonaCentral = nullptr;   // widget interno que cuelga del scroll vertical
     QWidget *zonaDerecha = nullptr;
     cframe  *paginaPrincipal = nullptr;
+    QList<QString> rutasAudiosSeleccionados;  // para Álbum/EP (múltiples) y Single (uno)
+    void mostrarDialogoEditarAudios();        // ventana para editar nombres antes de guardar
+    static QString formatearMMSS(qint64 ms);  // util para mostrar la duración
 
     // ---- Header del menú (para refrescar nombre/foto) ----
     QPushButton *hdrBtn = nullptr;
@@ -212,6 +217,7 @@ private:
     // Refrescar header tras cambios en Perfil
     void refreshHeaderPerfil();                    // recarga desde usuarios.dat
     void setHeaderAvatarPreview(const QString&);   // solo vista (sin guardar)
+
 
 protected:
     bool eventFilter(QObject *obj, QEvent *ev) override;

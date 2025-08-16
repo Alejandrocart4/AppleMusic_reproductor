@@ -9,7 +9,6 @@ SOURCES += \
     cancion.cpp \
     interfaz_usuario.cpp \
     interfazadministrador.cpp \
-    interfazadministrador.cpp \
     main.cpp \
     cframe.cpp \
     manejadorcanciones.cpp \
@@ -21,7 +20,6 @@ HEADERS += \
     cframe.h \
     interfaz_usuario.h \
     interfazadministrador.h \
-    interfazadministrador.h \
     manejadorcanciones.h \
     usuarios.h
 
@@ -32,10 +30,9 @@ FORMS += \
 RESOURCES += \
     imagnes.qrc
 
-# Asegúrate de tener una versión moderna de Qt
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
-# Permite que el ejecutable encuentre las bibliotecas en tiempo de ejecución (útil si usas deploys)
+# Permite que el ejecutable encuentre las bibliotecas en tiempo de ejecución
 win32:CONFIG(release, debug|release): LIBS += -L$$PWD/libs -lQtMultimedia
 unix:!macx: LIBS += -lQt5Multimedia
 

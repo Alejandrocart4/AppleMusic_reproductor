@@ -13,6 +13,7 @@ public:
     QList<Cancion> obtenerTodas();
     QList<Cancion> obtenerPorArtista(const QString &artista);
     QList<Cancion> obtenerPorTipo(const QString &tipo); // Álbum, EP, Single
+    bool renombrarArtista(const QString &oldName, const QString &newName);
 
 private:
     QString rutaArchivo = "canciones.dat";

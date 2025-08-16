@@ -650,7 +650,8 @@ void InterfazAdministrador::mostrarFormularioAgregar(bool limpiar) {
     lblAudio = new QLabel("Sin archivo de audio"); lblAudio->setAlignment(Qt::AlignCenter);
 
     btnCargarPortada = new QPushButton("Cargar Portada");
-    btnCargarAudio   = new QPushButton("Cargar Audio");
+
+            btnCargarAudio = new QPushButton("Cargar Audio");
     btnGuardar       = new QPushButton("Guardar Canción");
 
     seccionColeccion = new QWidget;
@@ -675,10 +676,44 @@ void InterfazAdministrador::mostrarFormularioAgregar(bool limpiar) {
     });
 
     connect(btnCargarAudio, &QPushButton::clicked, this, [=]() {
-        QString ruta = QFileDialog::getOpenFileName(this, "Seleccionar Audio", "", "Audio (*.mp3 *.wav *.m4a *.flac)");
-        if (!ruta.isEmpty()) {
+        const QString tipo = cbTipo->currentText();
+
+        if (tipo == "Álbum" || tipo == "EP") {
+            // Selección múltiple
+            rutasAudiosSeleccionados = QFileDialog::getOpenFileNames(
+                this,
+                "Seleccionar audios",
+                QDir::homePath(),
+                "Audio (*.mp3 *.wav *.m4a *.flac)"
+                );
+            if (rutasAudiosSeleccionados.isEmpty()) return;
+
+            // Abre diálogo para editar nombres y guarda cada pista
+            mostrarDialogoEditarAudios();
+            lblAudio->setText(QString("%1 archivo(s) seleccionados").arg(rutasAudiosSeleccionados.size()));
+            // en álbum/EP no usamos leDuracion global (cada pista tiene su duración)
+        } else {
+            // SINGLE: archivo único + autollenado de título y duración
+            QString ruta = QFileDialog::getOpenFileName(
+                this,
+                "Seleccionar Audio",
+                QDir::homePath(),
+                "Audio (*.mp3 *.wav *.m4a *.flac)"
+                );
+            if (ruta.isEmpty()) return;
+
+            rutasAudiosSeleccionados.clear();
+            rutasAudiosSeleccionados.append(ruta);
+
             rutaAudioSeleccionada = ruta;
             lblAudio->setText(QFileInfo(ruta).fileName());
+
+            // Prefill del título editable
+            if (leTitulo && leTitulo->text().trimmed().isEmpty()) {
+                leTitulo->setText(QFileInfo(ruta).baseName());
+            }
+
+            // Extraer duración (para el campo Duración del formulario)
             auto *tmpPlayer = new QMediaPlayer(this);
             auto *tmpOut    = new QAudioOutput(this);
             tmpPlayer->setAudioOutput(tmpOut);
@@ -713,6 +748,165 @@ void InterfazAdministrador::mostrarFormularioAgregar(bool limpiar) {
 
     scroll->setWidget(contenedor);
     qobject_cast<QVBoxLayout*>(zonaCentral->layout())->addWidget(scroll);
+}
+
+QString InterfazAdministrador::formatearMMSS(qint64 ms) {
+    const qint64 total = ms / 1000;
+    const int mm = int(total / 60), ss = int(total % 60);
+    return QString("%1:%2").arg(mm, 2, 10, QChar('0')).arg(ss, 2, 10, QChar('0'));
+}
+
+void InterfazAdministrador::mostrarDialogoEditarAudios() {
+    if (rutasAudiosSeleccionados.isEmpty()) return;
+
+    QDialog dlg(this);
+    dlg.setWindowTitle("Editar nombres de canciones");
+    dlg.setModal(true);
+    dlg.resize(720, 520);
+    dlg.setStyleSheet(
+        "QDialog{background:#171717;color:#eaeaea;}"
+        "QLabel{color:#eaeaea;}"
+        "QLineEdit{background:#222;border:1px solid #333;border-radius:6px;padding:6px;color:#fff;}"
+        "QPushButton{background:#2a2a2a;border:1px solid #3a3a3a;color:#fff;border-radius:8px;padding:8px 12px;font-weight:600;}"
+        "QPushButton:hover{background:#383838;}"
+        "QScrollArea{border:1px solid #2a2a2a;border-radius:8px;background:#171717;}"
+        );
+
+    QVBoxLayout *root = new QVBoxLayout(&dlg);
+    root->setContentsMargins(14,14,14,14);
+    root->setSpacing(10);
+
+    // Encabezado tipo “tabla”
+    QWidget *header = new QWidget;
+    QHBoxLayout *hHead = new QHBoxLayout(header);
+    hHead->setContentsMargins(6,0,6,0);
+    hHead->setSpacing(10);
+
+    auto mkHeader = [](const QString &t, int minW = 0){
+        QLabel *l = new QLabel(t);
+        l->setStyleSheet("color:#bdbdbd;font-size:12px;");
+        if (minW>0) l->setMinimumWidth(minW);
+        return l;
+    };
+    hHead->addWidget(mkHeader("Archivo", 240));
+    hHead->addWidget(mkHeader("Título (editable)"), 1);
+    hHead->addWidget(mkHeader("Duración", 70), 0, Qt::AlignRight);
+    root->addWidget(header);
+
+    // Contenedor desplazable
+    QScrollArea *scroll = new QScrollArea;
+    scroll->setWidgetResizable(true);
+    QWidget *contenedor = new QWidget;
+    QVBoxLayout *lay = new QVBoxLayout(contenedor);
+    lay->setSpacing(10);
+    lay->setContentsMargins(6,6,6,6);
+
+    // Fila de datos
+    struct Fila {
+        QLabel *lblArchivo{};
+        QLineEdit *editTitulo{};
+        QLabel *lblDur{};
+        QString ruta;
+        qint64 ms{0};
+    };
+    QList<Fila> filas;
+
+    auto mkPill = [](const QString &txt)->QLabel*{
+        QLabel *l = new QLabel(txt);
+        l->setStyleSheet("background:#222;border:1px solid #333;border-radius:6px;padding:6px 8px;");
+        l->setTextInteractionFlags(Qt::TextSelectableByMouse);
+        return l;
+    };
+
+    for (const QString &ruta : rutasAudiosSeleccionados) {
+        QWidget *filaW = new QWidget;
+        QHBoxLayout *h = new QHBoxLayout(filaW);
+        h->setContentsMargins(6,0,6,0);
+        h->setSpacing(10);
+
+        QLabel *lblArchivo = mkPill(QFileInfo(ruta).fileName());
+        lblArchivo->setMinimumWidth(240);
+
+        QLineEdit *editTitulo = new QLineEdit(QFileInfo(ruta).baseName());
+        editTitulo->setMinimumWidth(280);
+
+        QLabel *lblDur = mkPill("00:00");
+        lblDur->setMinimumWidth(70);
+        lblDur->setAlignment(Qt::AlignRight|Qt::AlignVCenter);
+
+        h->addWidget(lblArchivo);
+        h->addWidget(editTitulo, 1);
+        h->addWidget(lblDur, 0, Qt::AlignRight);
+
+        lay->addWidget(filaW);
+
+        Fila f; f.lblArchivo = lblArchivo; f.editTitulo = editTitulo; f.lblDur = lblDur; f.ruta = ruta;
+        filas.append(f);
+
+        // Duración asíncrona por archivo
+        auto *p = new QMediaPlayer(&dlg);
+        auto *o = new QAudioOutput(&dlg);
+        p->setAudioOutput(o);
+        QObject::connect(p, &QMediaPlayer::durationChanged, &dlg, [=](qint64 ms){
+            auto mmss = formatearMMSS(ms);
+            // actualiza etiqueta
+            lblDur->setText(mmss);
+            // guarda ms en la estructura correspondiente
+            for (Fila &ref : const_cast<QList<Fila>&>(filas)) {
+                if (ref.ruta == ruta) { ref.ms = ms; break; }
+            }
+            p->stop(); p->deleteLater(); o->deleteLater();
+        });
+        p->setSource(QUrl::fromLocalFile(ruta));
+    }
+
+    QWidget *spacer = new QWidget; spacer->setFixedHeight(2);
+    lay->addWidget(spacer);
+    lay->addStretch(1);
+
+    scroll->setWidget(contenedor);
+    root->addWidget(scroll, 1);
+
+    // Botón guardar
+    QPushButton *btnGuardar = new QPushButton("Guardar pistas");
+    root->addWidget(btnGuardar, 0, Qt::AlignRight);
+
+    QObject::connect(btnGuardar, &QPushButton::clicked, this, [this,&dlg, &filas]() {
+        const QString tipo = cbTipo ? cbTipo->currentText() : "Single";
+        const QString coleccion =
+            (seccionColeccion && seccionColeccion->isVisible() && cbSeleccionColeccion)
+                ? cbSeleccionColeccion->currentText() : "";
+
+        ManejadorCanciones mc;
+
+        for (const Fila &f : filas) {
+            QString tituloFinal = f.editTitulo->text().trimmed();
+            if (tituloFinal.isEmpty()) tituloFinal = QFileInfo(f.ruta).baseName();
+
+            Cancion c;
+            c.id          = QDateTime::currentMSecsSinceEpoch();
+            c.titulo      = tituloFinal;
+            c.artista     = nombreArtistaLogueado;
+            c.genero      = cbGenero ? cbGenero->currentText() : "";
+            c.categoria   = cbCategoria ? cbCategoria->currentText() : "";
+            c.duracion    = formatearMMSS(f.ms);
+            c.descripcion = teDescripcion ? teDescripcion->toPlainText() : "";
+            c.portada     = rutaPortadaSeleccionada;      // misma portada para todas
+            c.rutaArchivo = f.ruta;
+            c.tipo        = tipo;                          // Single, EP, Álbum
+            c.coleccion   = coleccion;                    // nombre del álbum/EP
+            c.fechaCarga  = QDate::currentDate();
+            c.activo      = true;
+
+            mc.agregarCancion(c);
+        }
+        QMessageBox::information(this, "Éxito", "Canciones guardadas correctamente.");
+        dlg.accept();
+        construirHome();
+        refrescarEstadisticasDerecha();
+    });
+
+    dlg.exec();
 }
 
 void InterfazAdministrador::mostrarFormularioCrearAlbumEP(const QString &tipo) {
@@ -861,6 +1055,8 @@ void InterfazAdministrador::mostrarFormularioEditarPerfil() {
     });
 
     connect(btnGuardarPerfil, &QPushButton::clicked, this, [=]() {
+        QString oldName = nombreArtistaLogueado;
+        QString newName = leNombreArtistico->text().trimmed();
         QList<Usuario> lista = mu.obtenerUsuarios();
         for (Usuario &u : lista) {
             if (u.tipo == Administrador && u.nombreArtistico == nombreArtistaLogueado) {
@@ -873,9 +1069,14 @@ void InterfazAdministrador::mostrarFormularioEditarPerfil() {
                 if (!rutaImagenPerfilTmp.isEmpty()) u.rutaImagen = rutaImagenPerfilTmp;
                 nombreArtistaLogueado = u.nombreArtistico; // por si cambia
                 break;
+
             }
+
         }
+
         QFile archivo("usuarios.dat");
+        ManejadorCanciones mc;
+        mc.renombrarArtista(oldName, newName);
         if (archivo.open(QIODevice::WriteOnly | QIODevice::Truncate)) {
             QDataStream out(&archivo);
             for (const Usuario &uu : lista) uu.guardar(out);
@@ -1147,6 +1348,11 @@ void InterfazAdministrador::slotTipoCancionCambio(const QString &texto) {
     if (texto == "Álbum") { cbSeleccionColeccion->clear(); cbSeleccionColeccion->addItems(cargarNombresAlbumes()); seccionColeccion->setVisible(true); }
     else if (texto == "EP") { cbSeleccionColeccion->clear(); cbSeleccionColeccion->addItems(cargarNombresEPs()); seccionColeccion->setVisible(true); }
     else { cbSeleccionColeccion->clear(); seccionColeccion->setVisible(false); }
+
+    if (btnCargarAudio) {
+        if (texto == "Álbum" || texto == "EP") btnCargarAudio->setText("Cargar Audios Múltiples");
+        else                                   btnCargarAudio->setText("Cargar Audio");
+    }
 }
 
 void InterfazAdministrador::slotGuardarCancionNueva() {

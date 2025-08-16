@@ -48,3 +48,28 @@ QList<Cancion> ManejadorCanciones::obtenerPorTipo(const QString &tipo) {
     }
     return resultado;
 }
+
+bool ManejadorCanciones::renombrarArtista(const QString &oldName, const QString &newName) {
+    QList<Cancion> canciones = obtenerTodas();
+    bool cambiado = false;
+
+    for (Cancion &c : canciones) {
+        if (c.artista == oldName) {
+            c.artista = newName;
+            cambiado = true;
+        }
+    }
+
+    if (cambiado) {
+        QFile archivo(rutaArchivo);
+        if (!archivo.open(QIODevice::WriteOnly))
+            return false;
+        QDataStream out(&archivo);
+        for (const Cancion &c : canciones)
+            c.guardar(out);
+        archivo.close();
+    }
+
+    return cambiado;
+}
+
