@@ -762,7 +762,7 @@ void InterfazAdministrador::mostrarDialogoEditarAudios() {
     QDialog dlg(this);
     dlg.setWindowTitle("Editar nombres de canciones");
     dlg.setModal(true);
-    dlg.resize(720, 520);
+    dlg.resize(770, 520);
     dlg.setStyleSheet(
         "QDialog{background:#171717;color:#eaeaea;}"
         "QLabel{color:#eaeaea;}"
@@ -877,6 +877,16 @@ void InterfazAdministrador::mostrarDialogoEditarAudios() {
             (seccionColeccion && seccionColeccion->isVisible() && cbSeleccionColeccion)
                 ? cbSeleccionColeccion->currentText() : "";
 
+        // ===== Obtener portada de la colección (álbum/EP) =====
+        QString portadaColeccion;   // quedará la ruta de imagen del álbum/EP
+        if (!coleccion.isEmpty()) {
+            const QString archivo = (tipo == "Álbum") ? "albumes.dat" : "eps.dat";
+            for (const auto &c : leerColecciones(archivo)) {
+                if (c.nombre == coleccion) { portadaColeccion = c.rutaImagen; break; }
+            }
+        }
+        // =============================================================
+
         ManejadorCanciones mc;
 
         for (const Fila &f : filas) {
@@ -891,7 +901,7 @@ void InterfazAdministrador::mostrarDialogoEditarAudios() {
             c.categoria   = cbCategoria ? cbCategoria->currentText() : "";
             c.duracion    = formatearMMSS(f.ms);
             c.descripcion = teDescripcion ? teDescripcion->toPlainText() : "";
-            c.portada     = rutaPortadaSeleccionada;      // misma portada para todas
+            c.portada     = !portadaColeccion.isEmpty() ? portadaColeccion : rutaPortadaSeleccionada;  // misma portada para todas
             c.rutaArchivo = f.ruta;
             c.tipo        = tipo;                          // Single, EP, Álbum
             c.coleccion   = coleccion;                    // nombre del álbum/EP
