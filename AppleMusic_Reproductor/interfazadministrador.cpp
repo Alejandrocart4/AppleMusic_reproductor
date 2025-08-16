@@ -30,6 +30,7 @@
 #include <QSet>
 #include <QMap>
 #include <algorithm>
+#include <QDateEdit>
 
 // ===== Qt Charts =====
 #include <QtCharts/QChartView>
@@ -529,9 +530,34 @@ void InterfazAdministrador::abrirDialogoColeccion(const QString &archivoColeccio
     QVBoxLayout *v = new QVBoxLayout(contenedor);
 
     ManejadorCanciones mc;
-    for (const Cancion &c : mc.obtenerPorArtista(nombreArtistaLogueado))
-        if (c.activo && c.coleccion == nombreColeccion)
-            v->addWidget(crearItemListaCancion(c, 56));
+
+    // === Enumeración segura (no altera crearItemListaCancion) ===
+    int indice = 1;
+    for (const Cancion &c : mc.obtenerPorArtista(nombreArtistaLogueado)) {
+        if (!c.activo || c.coleccion != nombreColeccion) continue;
+
+        // número (etiqueta)
+        QLabel *lblNumero = new QLabel(QString::number(indice) + ".");
+        lblNumero->setStyleSheet("color:#bbb; font-size:14px; margin-right:6px;");
+        lblNumero->setFixedWidth(24); // ancho fijo para alinear
+        lblNumero->setAlignment(Qt::AlignRight | Qt::AlignVCenter);
+
+        // el item original (no lo toco por dentro)
+        QWidget *item = crearItemListaCancion(c, 56);
+        item->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
+
+        // fila
+        QWidget *filaW = new QWidget;
+        QHBoxLayout *fila = new QHBoxLayout(filaW);
+        fila->setContentsMargins(0,0,0,0);
+        fila->setSpacing(8);
+        fila->addWidget(lblNumero, 0, Qt::AlignTop);
+        fila->addWidget(item,     1);
+
+        v->addWidget(filaW);
+
+        ++indice;
+    }
     v->addStretch();
     scroll->setWidget(contenedor);
     root->addWidget(scroll, 1);
@@ -589,7 +615,8 @@ void InterfazAdministrador::mostrarPerfilArtista() {
     QWidget *cab = new QWidget; QHBoxLayout *hc = new QHBoxLayout(cab);
     lblImagenPerfil = new QLabel; lblImagenPerfil->setFixedSize(160,160);
     lblImagenPerfil->setAlignment(Qt::AlignCenter);
-    lblImagenPerfil->setStyleSheet("border:1px solid #333;background:white;border-radius:10px;");
+    lblImagenPerfil->setStyleSheet("background:white; border:2px solid #555;");  // SIN border-radius
+
     if (esImagenValida(artista.rutaImagen)) {
         QPixmap img(artista.rutaImagen);
         lblImagenPerfil->setPixmap(img.scaled(lblImagenPerfil->size(), Qt::KeepAspectRatio, Qt::SmoothTransformation));
@@ -933,6 +960,11 @@ void InterfazAdministrador::mostrarFormularioCrearAlbumEP(const QString &tipo) {
     QLineEdit *leNombre = new QLineEdit;
     QTextEdit *teDescripcion = new QTextEdit; teDescripcion->setFixedHeight(60);
     QLineEdit *leGeneroCol = new QLineEdit; leGeneroCol->setPlaceholderText("Género (opcional)");
+    QDateEdit *deFecha = new QDateEdit(QDate::currentDate());
+    deFecha->setCalendarPopup(true);
+    deFecha->setDisplayFormat("dd 'de' MMMM 'de' yyyy");
+    // Solo local para este control en español:
+    deFecha->setLocale(QLocale(QLocale::Spanish, QLocale::Honduras));
 
     QLabel *lblImagen = new QLabel("Sin imagen");
     lblImagen->setFixedSize(160, 160);
@@ -957,7 +989,10 @@ void InterfazAdministrador::mostrarFormularioCrearAlbumEP(const QString &tipo) {
         }
         guardarColeccionEnArchivo(tipo, leNombre->text(), teDescripcion->toPlainText(), rutaImagenColeccionTmp);
         QFile f(tipo == "Álbum" ? "albumes.dat" : "eps.dat");
-        if (f.open(QIODevice::Append)) { QDataStream out(&f); out << leGeneroCol->text() << QDate::currentDate(); }
+        if (f.open(QIODevice::Append)) {
+            QDataStream out(&f);
+            out << leGeneroCol->text() << deFecha->date();   // ← usa la fecha elegida
+        }
         QMessageBox::information(this, tipo, tipo + " creado correctamente.");
         construirHome();
     });
@@ -965,6 +1000,8 @@ void InterfazAdministrador::mostrarFormularioCrearAlbumEP(const QString &tipo) {
     layout->addWidget(new QLabel("Nombre:"));      layout->addWidget(leNombre);
     layout->addWidget(new QLabel("Descripción:")); layout->addWidget(teDescripcion);
     layout->addWidget(new QLabel("Género (opcional):")); layout->addWidget(leGeneroCol);
+    layout->addWidget(new QLabel("Fecha de creación:"));
+    layout->addWidget(deFecha);
     layout->addWidget(lblImagen); layout->addWidget(btnCargar); layout->addWidget(btnGuardar);
     layout->addStretch();
 
