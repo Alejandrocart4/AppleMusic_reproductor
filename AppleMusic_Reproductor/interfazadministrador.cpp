@@ -50,23 +50,60 @@
 #include "manejadorcanciones.h"
 #include "usuarios.h"
 
+
+
 // =================== Utils ===================
 
 static QPixmap circularPixmapFromFile(const QString &ruta, const QSize &tam) {
     QPixmap dst(tam);
     dst.fill(Qt::transparent);
-    QPainter p(&dst);
-    p.setRenderHint(QPainter::Antialiasing, true);
-    QPainterPath path; path.addEllipse(QRectF(QPointF(0,0), tam));
-    p.setClipPath(path);
+
     QPixmap src;
     if (!ruta.isEmpty() && QFile::exists(ruta)) src.load(ruta);
-    if (!src.isNull())
-        p.drawPixmap(0,0, src.scaled(tam, Qt::KeepAspectRatioByExpanding, Qt::SmoothTransformation));
-    else
-        p.fillRect(QRect(QPoint(0,0), tam), QColor("#444"));
+    if (src.isNull()) {
+        // fallback gris
+        QPainter p(&dst);
+        p.setRenderHint(QPainter::Antialiasing, true);
+        p.setBrush(QColor("#444"));
+        p.setPen(Qt::NoPen);
+        p.drawEllipse(QRect(QPoint(0,0), tam));
+        p.end();
+        return dst;
+    }
+
+    // 1) Encajar (KeepAspectRatio) para que se vea completa dentro del círculo
+    QPixmap scaled = src.scaled(tam, Qt::KeepAspectRatio, Qt::SmoothTransformation);
+
+    // 2) Dibujar recortando a círculo
+    QPainter p(&dst);
+    p.setRenderHint(QPainter::Antialiasing, true);
+    QPainterPath path; path.addEllipse(QRect(QPoint(0,0), tam));
+    p.setClipPath(path);
+
+    // centrar la imagen encajada dentro del círculo
+    QPoint topLeft((tam.width()  - scaled.width())/2,
+                   (tam.height() - scaled.height())/2);
+    p.drawPixmap(topLeft, scaled);
     p.end();
     return dst;
+}
+
+static QPixmap fitOrCover(const QString &ruta, const QSize &target, bool cover) {
+    QPixmap src;
+    if (!QFile::exists(ruta) || !src.load(ruta) || src.isNull())
+        return QPixmap();
+
+    if (cover) {
+        // Escala para cubrir y luego recorta al centro
+        QPixmap scaled = src.scaled(target, Qt::KeepAspectRatioByExpanding, Qt::SmoothTransformation);
+        if (scaled.size() == target) return scaled;
+        const int x = qMax(0, (scaled.width()  - target.width())  / 2);
+        const int y = qMax(0, (scaled.height() - target.height()) / 2);
+        return scaled.copy(x, y, qMin(target.width(), scaled.width()),
+                           qMin(target.height(), scaled.height()));
+    } else {
+        return src.scaled(target, Qt::KeepAspectRatio, Qt::SmoothTransformation);
+    }
 }
 
 bool InterfazAdministrador::esImagenValida(const QString &ruta) {
@@ -319,6 +356,7 @@ void InterfazAdministrador::construirHome() {
     construirSeccionColecciones(lay, "Albums", "albumes.dat");
     construirSeccionColecciones(lay, "EPs", "eps.dat");
 
+
     lay->addStretch();
 }
 
@@ -327,7 +365,7 @@ void InterfazAdministrador::construirSeccionSingles(QVBoxLayout *layout) {
     titulo->setStyleSheet("font-size: 20px; font-weight: bold; margin: 8px 0 6px 0;");
     layout->addWidget(titulo);
 
-    const int altoItem   = 64;
+    const int altoItem   = 60;
     const int porColumna = 3;
 
     SmartScrollArea *scroll = new SmartScrollArea;
@@ -375,9 +413,10 @@ QWidget* InterfazAdministrador::crearItemListaCancion(const Cancion &c, int alto
     thumb->setFixedSize(alto, alto);
     thumb->setStyleSheet("background:white;border-radius:6px;");
     if (esImagenValida(c.portada)) {
-        QPixmap px(c.portada);
-        thumb->setPixmap(px.scaled(thumb->size(), Qt::KeepAspectRatio, Qt::SmoothTransformation));
-    } else thumb->setText("No art");
+        thumb->setPixmap(fitOrCover(c.portada, thumb->size(), /*cover=*/true));
+    } else {
+        thumb->setText("No art");
+    }
 
     QLabel *lblTitulo = new QLabel(c.titulo);
     lblTitulo->setStyleSheet("font-size:15px;font-weight:700;");
@@ -427,8 +466,7 @@ QWidget* InterfazAdministrador::crearTarjetaColeccionPequena(const Coleccion &co
     art->setFixedSize(200, 200);
     art->setStyleSheet("background:white;border-radius:8px;");
     if (esImagenValida(col.rutaImagen)) {
-        QPixmap px(col.rutaImagen);
-        art->setPixmap(px.scaled(art->size(), Qt::KeepAspectRatio, Qt::SmoothTransformation));
+        art->setPixmap(fitOrCover(col.rutaImagen, art->size(), /*cover=*/true));
     } else art->setText("No art");
 
     QLabel *nom = new QLabel(col.nombre.isEmpty()? "(sin nombre)": col.nombre);
@@ -508,8 +546,7 @@ void InterfazAdministrador::abrirDialogoColeccion(const QString &archivoColeccio
     QLabel *art = new QLabel; art->setFixedSize(180,180);
     art->setStyleSheet("background:white;border-radius:10px;");
     if (esImagenValida(objetivo.rutaImagen)) {
-        QPixmap px(objetivo.rutaImagen);
-        art->setPixmap(px.scaled(art->size(), Qt::KeepAspectRatio, Qt::SmoothTransformation));
+        art->setPixmap(fitOrCover(objetivo.rutaImagen, art->size(), /*cover=*/true));
     } else art->setText("No art");
 
     QLabel *lblTitulo = new QLabel(objetivo.nombre);
@@ -538,9 +575,9 @@ void InterfazAdministrador::abrirDialogoColeccion(const QString &archivoColeccio
 
         // número (etiqueta)
         QLabel *lblNumero = new QLabel(QString::number(indice) + ".");
-        lblNumero->setStyleSheet("color:#bbb; font-size:14px; margin-right:6px;");
-        lblNumero->setFixedWidth(24); // ancho fijo para alinear
-        lblNumero->setAlignment(Qt::AlignRight | Qt::AlignVCenter);
+        lblNumero->setStyleSheet("color:#fff; font-size:16px; font-weight:bold;");
+        lblNumero->setFixedWidth(32); // ancho suficiente para 1, 10, 100...
+        lblNumero->setAlignment(Qt::AlignCenter); // centrado horizontal y vertical
 
         // el item original (no lo toco por dentro)
         QWidget *item = crearItemListaCancion(c, 56);
@@ -596,55 +633,120 @@ void InterfazAdministrador::construirMisCancionesLista() {
 // =================== PERFIL ===================
 
 void InterfazAdministrador::mostrarPerfilArtista() {
+    // 1) Limpiar zona central
     limpiarResiduosEdicionGlobal();
     limpiarZonaCentral();
 
+    // 2) Cargar datos del admin actual
     ManejadorUsuarios mu;
     QList<Usuario> usuarios = mu.obtenerUsuarios();
     Usuario artista; bool ok = false;
     for (const Usuario &u : usuarios)
         if (u.tipo==Administrador && u.nombreArtistico==nombreArtistaLogueado) { artista=u; ok=true; break; }
 
-    auto *lay = qobject_cast<QVBoxLayout*>(zonaCentral->layout());
+    auto *root = qobject_cast<QVBoxLayout*>(zonaCentral->layout());
+
+    // ===== Título estilo Apple Music =====
     QLabel *titulo = new QLabel("👤 Perfil del Artista");
-    titulo->setStyleSheet("font-size: 20px; font-weight: bold;");
-    lay->addWidget(titulo);
+    titulo->setStyleSheet(
+        "font-size: 22px; font-weight: 800; letter-spacing: 0.3px; "
+        "color: #ffffff;"
+        );
+    root->addWidget(titulo);
 
-    if (!ok) { lay->addWidget(new QLabel("No se encontró el perfil del administrador actual.")); lay->addStretch(); return; }
+    if (!ok) {
+        root->addWidget(new QLabel("No se encontró el perfil del administrador actual."));
+        root->addStretch(); return;
+    }
 
-    QWidget *cab = new QWidget; QHBoxLayout *hc = new QHBoxLayout(cab);
-    lblImagenPerfil = new QLabel; lblImagenPerfil->setFixedSize(160,160);
+    // ===== Tarjeta principal (estética Apple Music dark) =====
+    QWidget *card = new QWidget;
+    card->setStyleSheet("background:#1e1e1e; border-radius:14px;");
+    QHBoxLayout *h = new QHBoxLayout(card);
+    h->setContentsMargins(18,18,18,18);
+    h->setSpacing(18);
+
+    // ----------------------------------------------------------------
+    //const bool RECORTAR = true;
+
+    lblImagenPerfil = new QLabel;
+    lblImagenPerfil->setFixedSize(200, 200);                    // más grande
     lblImagenPerfil->setAlignment(Qt::AlignCenter);
-    lblImagenPerfil->setStyleSheet("background:white; border:2px solid #555;");  // SIN border-radius
 
     if (esImagenValida(artista.rutaImagen)) {
         QPixmap img(artista.rutaImagen);
-        lblImagenPerfil->setPixmap(img.scaled(lblImagenPerfil->size(), Qt::KeepAspectRatio, Qt::SmoothTransformation));
-    } else lblImagenPerfil->setText("Sin imagen");
+        lblImagenPerfil->setPixmap(
+            img.scaled(lblImagenPerfil->size(), Qt::KeepAspectRatio, Qt::SmoothTransformation)
+            );
+    } else {
+        lblImagenPerfil->setText("Sin imagen");
+        lblImagenPerfil->setStyleSheet(lblImagenPerfil->styleSheet() + QString("; color:#bbb;"));
+    }
+    lblImagenPerfil->setStyleSheet(
+       // "border-radius: 60px; "       // ajustar al tamaño
+        "border: 2px solid white; "
+        "background-position: center; "
+        "background-repeat: no-repeat; "
+        "background-size: cover;"
+        );
+    h->addWidget(lblImagenPerfil, 0, Qt::AlignTop);
 
-    QVBoxLayout *info = new QVBoxLayout;
-    auto add = [&](const QString &label, const QString &val){
-        QLabel *l = new QLabel(QString("<b>%1:</b> %2").arg(label, val.isEmpty()? "-" : val));
-        info->addWidget(l);
-    };
+    // ----------------------------------------------------------------
+    // 4) INFORMACIÓN (tipografía y colores tipo Apple Music)
+    // ----------------------------------------------------------------
+    QWidget *panelInfo = new QWidget;
+    QVBoxLayout *v = new QVBoxLayout(panelInfo);
+    v->setContentsMargins(0,0,0,0);
+    v->setSpacing(6);
+
+    // Nombre grande (artístico)
     QLabel *nombreGrand = new QLabel(artista.nombreArtistico);
-    nombreGrand->setStyleSheet("font-size:22px;font-weight:700;");
-    info->addWidget(nombreGrand);
-    add("Nombre real", artista.nombreReal);
-    add("País", artista.paisOrigen);
-    add("Género musical", artista.generoMusical);
-    add("Correo", artista.correoElectronico);
-    add("Bio", artista.biografia);
+    nombreGrand->setStyleSheet(
+        "font-size: 26px; font-weight: 900; color: #ffffff; "
+        "margin-bottom: 4px;"
+        );
+    nombreGrand->setWordWrap(true);
+    v->addWidget(nombreGrand);
 
+    auto addRow = [&](const QString &label, const QString &val) {
+        // label con acento Apple (rosa Music), valor en blanco
+        QLabel *l = new QLabel(
+            QString("<span style='color:#fa2d48; font-weight:700;'>%1:</span> "
+                    "<span style='color:#ffffff;'>%2</span>")
+                .arg(label, val.isEmpty()? "-" : val)
+            );
+        l->setStyleSheet("font-size: 14px;");  // limpio, legible
+        l->setTextFormat(Qt::RichText);
+        l->setWordWrap(true);
+        v->addWidget(l);
+    };
+
+    addRow("Nombre real",   artista.nombreReal);
+    addRow("País",          artista.paisOrigen);
+    addRow("Género musical",artista.generoMusical);
+    addRow("Correo",        artista.correoElectronico);
+    addRow("Bio",           artista.biografia);
+
+    // Botón Editar (alineado)
     QPushButton *btnEditar = new QPushButton("Editar");
-    btnEditar->setStyleSheet("background:#2a2a2a;padding:6px 10px;border-radius:8px;");
+    btnEditar->setCursor(Qt::PointingHandCursor);
+    btnEditar->setStyleSheet(
+        "QPushButton{background:#2a2a2a; color:#fff; padding:8px 14px; "
+        "border-radius:10px; font-weight:700;}"
+        "QPushButton:hover{background:#383838;}"
+        "QPushButton:pressed{background:#454545;}"
+        );
     connect(btnEditar, &QPushButton::clicked, this, &InterfazAdministrador::mostrarFormularioEditarPerfil);
 
-    info->addSpacing(8); info->addWidget(btnEditar, 0, Qt::AlignLeft);
-    hc->addWidget(lblImagenPerfil); hc->addLayout(info,1);
-    lay->addWidget(cab);
-    lay->addStretch();
+    v->addSpacing(6);
+    v->addWidget(btnEditar, 0, Qt::AlignLeft);
+
+    h->addWidget(panelInfo, 1);
+
+    root->addWidget(card);
+    root->addStretch();
 }
+
 
 void InterfazAdministrador::mostrarFormularioAgregar(bool limpiar) {
     limpiarResiduosEdicionGlobal();
@@ -970,6 +1072,7 @@ void InterfazAdministrador::mostrarFormularioCrearAlbumEP(const QString &tipo) {
     lblImagen->setFixedSize(160, 160);
     lblImagen->setAlignment(Qt::AlignCenter);
     lblImagen->setStyleSheet("border: 1px solid gray; background-color: white;");
+
 
     QPushButton *btnCargar = new QPushButton("Cargar Imagen");
     QPushButton *btnGuardar = new QPushButton("Guardar");
