@@ -73,3 +73,36 @@ bool ManejadorCanciones::renombrarArtista(const QString &oldName, const QString 
     return cambiado;
 }
 
+//***************************************************************************
+//***************************************************************************
+//***************************************************************************
+// ARCHIVOS INDEXADOS — utilidades de actualización — BEGIN
+
+bool ManejadorCanciones::actualizarDuracion(qint64 songId, const QString &duracion) {
+    QList<Cancion> canciones = obtenerTodas();
+    bool cambiado = false;
+    for (Cancion &c : canciones) {
+        if (c.id == songId) {
+            if (c.duracion != duracion && !duracion.isEmpty()) {
+                c.duracion = duracion;
+                cambiado = true;
+            }
+            break;
+        }
+    }
+    if (!cambiado) return false;
+
+    QFile archivo("canciones.dat");
+    if (!archivo.open(QIODevice::WriteOnly | QIODevice::Truncate)) return false;
+    QDataStream out(&archivo);
+    for (const Cancion &c : canciones) c.guardar(out);
+    archivo.close();
+    return true;
+}
+
+// ARCHIVOS INDEXADOS — utilidades de actualización — END
+//***************************************************************************
+//***************************************************************************
+//***************************************************************************
+
+

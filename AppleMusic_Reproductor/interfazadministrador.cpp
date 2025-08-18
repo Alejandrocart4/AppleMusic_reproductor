@@ -1563,3 +1563,5 @@ void InterfazAdministrador::slotAccionEliminarCancion() {
         construirHome(); refrescarEstadisticasDerecha();
     } else QMessageBox::warning(this, "Error", "No se pudo escribir canciones.dat");
 }
+
+

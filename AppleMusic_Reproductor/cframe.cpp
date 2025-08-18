@@ -138,10 +138,10 @@ cframe::cframe(QWidget *parent)
 
     ui->leContraseniaLogin->setEchoMode(QLineEdit::Password);
 
-    InterfazUsuario *uiUsuario = new InterfazUsuario(this);
+    /*InterfazUsuario *uiUsuario = new InterfazUsuario(this);
     uiUsuario->cargarEnPagina(ui->stackedWidget->widget(2));
 
-    /*InterfazAdministrador *uiAdmin = new InterfazAdministrador();
+    InterfazAdministrador *uiAdmin = new InterfazAdministrador();
     uiAdmin->cargarEnPagina(ui->stackedWidget->widget(3));*/
 
 
@@ -473,7 +473,18 @@ void cframe::on_btnIniciarSesion_clicked()
             else if (u.tipo == UsuarioComun) {
                 QMessageBox::information(this, "Bienvenido", "Bienvenido, " + u.nombreReal);
                 ui->stackedWidget->setCurrentIndex(2); // Página del usuario
-                mostrarCancionesParaUsuario();
+
+                QWidget *paginaUsuario = ui->stackedWidget->widget(2);
+                if (auto *oldLay = paginaUsuario->layout()) {
+                    QLayoutItem *child;
+                    while ((child = oldLay->takeAt(0)) != nullptr) {
+                        if (child->widget()) child->widget()->deleteLater();
+                        delete child;
+                    }
+                    delete oldLay;
+                }
+                auto *uiUsuario = new InterfazUsuario(this, u);
+                uiUsuario->cargarEnPagina(paginaUsuario);
             }
 
             // Limpiar campos de login

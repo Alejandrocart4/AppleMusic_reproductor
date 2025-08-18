@@ -15,6 +15,19 @@ public:
     QList<Cancion> obtenerPorTipo(const QString &tipo); // Álbum, EP, Single
     bool renombrarArtista(const QString &oldName, const QString &newName);
 
+    //***************************************************************************
+    //***************************************************************************
+    //***************************************************************************
+    // ARCHIVOS INDEXADOS — utilidades de actualización — BEGIN
+
+    bool actualizarDuracion(qint64 songId, const QString &duracion);
+
+    // ARCHIVOS INDEXADOS — utilidades de actualización — END
+    //***************************************************************************
+    //***************************************************************************
+    //***************************************************************************
+
+
 private:
     QString rutaArchivo = "canciones.dat";
 };
